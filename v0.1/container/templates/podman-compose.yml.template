@@ -1,0 +1,16 @@
+version: "3"
+services:
+  db:
+    container_name: database_postgres_${host_port}
+    build:
+      context: ./
+      dockerfile: postgres.podmanfile
+    ports:
+      - ${host_port}:${container_port}
+    volumes:
+      - ./data/:/var/lib/postgresql/data/:z
+    environment:
+      - POSTGRES_USER=${username}
+      - POSTGRES_PASSWORD=${password}
+      - POSTGRES_DB=${database_name}
+    command: "-p ${container_port}"

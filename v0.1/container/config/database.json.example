@@ -1,0 +1,7 @@
+{
+    "container_port": 5432,
+    "host_port": 3015,
+    "database_name": "superdb",
+    "username": "user",
+    "password": "password"
+}
