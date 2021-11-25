@@ -38,11 +38,7 @@ func (dbi *DatabaseInterface) Query(statement *SQLStatement, err error) (*[][]in
 		return nil, err
 	}
 
-	if errPool != nil {
-		return nil, errPool
-	}
-
-	results, errResults := pool.Query(context.Background(), statement.SQL, statement.Values...)
+	results, errResults := dbi.pool.Query(context.Background(), statement.SQL, statement.Values...)
 	if errResults != nil {
 		return nil, errResults
 	}
@@ -62,24 +58,24 @@ func (dbi *DatabaseInterface) Query(statement *SQLStatement, err error) (*[][]in
 	return &parsedRows, nil
 }
 
-func getConnectionStr(config *details.DBDetails) string {
+func getConnectionStr(details *DatabaseDetails) string {
 	return fmt.Sprintf(
 		connectionString,
-		config.Username,
-		config.Password,
-		config.Host,
-		config.Port,
-		config.DatabaseName,
+		details.Username,
+		details.Password,
+		details.Host,
+		details.Port,
+		details.Name,
 	)
 }
 
-func NewInterface(details *details.DBDetails) (*pgxpool.Pool, error) {
+func NewInterface(details *DatabaseDetails) (*DatabaseInterface, error) {
 	if details == nil {
 		return nil, errNilDetails
 	}
 
 	connStr := getConnectionStr(details)
-
+	fmt.Println(connStr)
 	pool, errPool := pgxpool.Connect(context.Background(), connStr)
 	if errPool != nil {
 		return nil, errPool
@@ -88,4 +84,6 @@ func NewInterface(details *details.DBDetails) (*pgxpool.Pool, error) {
 	database := DatabaseInterface{
 		pool: pool,
 	}
+
+	return &database, nil
 }

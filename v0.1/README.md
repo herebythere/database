@@ -7,18 +7,17 @@ Utility functions to interface with a postgres database
 ## Types
 
 ```
+DatabaseDetails {
+	Name     string
+	Host     string
+	Password string
+	Port     int64
+	Username string
+}
+
 type SQLStatement struct {
 	SQL    string
 	Values []unknown
-}
-
-DatabaseDetails {
-	Host        string
-	IdleTimeout time.Duration
-	MaxActive   int64 
-	MaxIdle     int64 
-	Port        int64
-	Protocol    string
 }
 ```
 
@@ -48,7 +47,7 @@ dnf install python3 golang podman podman-compose
 {
     "container_port": 5432,
     "host_port": 3015,
-    "database_name": "superdb",
+    "database_name": "db",
     "username": "user",
     "password": "password"
 }

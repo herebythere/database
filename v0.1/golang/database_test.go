@@ -2,15 +2,17 @@ package database
 
 import (
 	"fmt"
+	"os"
+	"strconv"
 	"testing"
 )
 
 const (
-	defaultDBAddress	= "127.0.0.1"
-	defaultDBPort		= "3015"
-	defaultDBUsername	= "superdb"
-	defaultDBName		= "superdb"
-	defaultDBPassword	= "suberdb_is_awesome"
+	defaultDBAddress  = "127.0.0.1"
+	defaultDBPort     = "3015"
+	defaultDBUsername = "superdb"
+	defaultDBName     = "superdb"
+	defaultDBPassword = "superdb_is_awesome"
 )
 
 // Env variables for tests
@@ -22,7 +24,7 @@ var (
 	dbPassword = os.Getenv("TEST_DATABASE_PASSWORD")
 
 	details, errDetails   = getDetails()
-	database, errDatabase = NewInterface(&details)
+	database, errDatabase = NewInterface(details)
 )
 
 func getDetails() (*DatabaseDetails, error) {
@@ -33,13 +35,13 @@ func getDetails() (*DatabaseDetails, error) {
 		dbPort = defaultDBPort
 	}
 	if dbName == "" {
-		dbAddress = defaultDBName
+		dbName = defaultDBName
 	}
 	if dbUsername == "" {
-		dbPort = defaultDBUsername
+		dbUsername = defaultDBUsername
 	}
 	if dbPassword == "" {
-		dbPort = defaultDBPassword
+		dbPassword = defaultDBPassword
 	}
 
 	dbPortInt64, errDbPortInt64 := strconv.ParseInt(dbPort, 10, 64)
@@ -47,7 +49,7 @@ func getDetails() (*DatabaseDetails, error) {
 		return nil, errDbPortInt64
 	}
 
-	details := CacheDetails{
+	details := DatabaseDetails{
 		Host:     dbAddress,
 		Port:     dbPortInt64,
 		Name:     dbName,
@@ -60,7 +62,7 @@ func getDetails() (*DatabaseDetails, error) {
 
 func TestDetailsExists(t *testing.T) {
 	if details == nil {
-		t.Error("nil parameters should return nil")
+		t.Error("details should not be nil")
 	}
 	if errDetails != nil {
 		t.Error(errDetails.Error())
@@ -68,21 +70,21 @@ func TestDetailsExists(t *testing.T) {
 }
 
 func TestDatabaseInterfaceExists(t *testing.T) {
-	if d == nil {
-		t.Error("nil parameters should return nil")
+	if database == nil {
+		t.Error("database should not be nil")
 	}
-	if errCache != nil {
-		t.Error(errCache.Error())
+	if errDatabase != nil {
+		t.Error(errDatabase.Error())
 	}
 }
 
 func TestSetterQueries(t *testing.T) {
 	expected := "hello world!"
-	statement := &Statement{
-		Sql:    "SELECT $1",
+	statement := &SQLStatement{
+		SQL:    "SELECT $1",
 		Values: []interface{}{expected},
 	}
-	results, errResults := Query(statement, nil)
+	results, errResults := database.Query(statement, nil)
 
 	if results == nil {
 		t.Fail()
@@ -99,6 +101,6 @@ func TestSetterQueries(t *testing.T) {
 	result := (*results)[0][0]
 	if result != expected {
 		t.Fail()
-		t.Logf(fmt.Sprint("expected: ", expected, ", found: ", result))
+		t.Logf(fmt.Sprint("expected: ", expected, ",\nfound: ", result))
 	}
 }

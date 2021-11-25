@@ -1,8 +1,8 @@
-# Cache
+# Database
 
-Container to deploy a redis cache
+Container to deploy a postgres database
 
-Utility functions to interface with a redis cache
+Utility functions to interface with a postgres database
 
 
 ## Versions
